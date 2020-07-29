@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 public class Cell extends Rectangle
 {
     private int state = 0;
+    private int total = 0; // total neighbors
     private int newState;
     private int x;
     private int y;
@@ -53,12 +54,34 @@ public class Cell extends Rectangle
     }
     public void updateColor(){
         Color color = state == 1? Color.WHITE : Color.GRAY;
+        if (state == 1 && Main.getColored() == true) {
+            switch (total) {
+                case 3:
+                    color = Color.LIGHTGREEN;
+                    break;
+                case 4:
+                    color = Color.LIMEGREEN;
+                    break;
+                case 5:
+                    color = Color.YELLOW;
+                    break;
+                case 6:
+                    color = Color.ORANGE;
+                    break;
+                case 7:
+                    color = Color.RED;
+                    break;
+                case 8:
+                    color = Color.DARKRED;
+                    break;
+            }
+        }
         this.setFill(color);
     }
     public void scanState(){
-        int total = 0;
         int neighborY;
         int neighborX;
+        total = 0;
         for(int i = -1; i < 2; i++){
             for(int j = -1; j < 2; j++){
                 if(!(i == 0 && j == 0)){
@@ -76,16 +99,13 @@ public class Cell extends Rectangle
                 }
             }
         }
-        if((total >= 2 && total <= 3) && state == 1)
-            newState = 1;
-        else if(total == 3 && state == 0)
+        if(((total >= 2 && total <= 3) && state == 1) || (total == 3 && state == 0))
             newState = 1;
         else
             newState = 0;
     }
     public void updateState(){
         state = newState;
-        updateColor();
     }
     public int getState(){
         return state;

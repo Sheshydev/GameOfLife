@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -22,15 +23,32 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Main extends Application {
-    public static int WIDTH = 306; //amount of cells in a row
-    public static int HEIGHT = 180; //amount of cells in a column
+    public static int WIDTH = 102; //amount of cells in a row
+    public static int HEIGHT = 60; //amount of cells in a column
     public static double SCREENWIDTH = 1920;
     public static double SCREENHEIGHT = 1080;
 
+    private static boolean colored = true;
+
     private static Cell cellArr[][] = new Cell[HEIGHT][WIDTH];
-    private GridPane root = new GridPane();
-    private Pane boardScene = new Pane();
-    private Group board = new Group();
+    private static GridPane root = new GridPane();
+    private static Pane boardScene = new Pane();
+    private static Group board = new Group();
+    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), actionEvent -> {
+        for(int y = 0; y < HEIGHT; y++){
+            for(int x = 0; x < WIDTH; x++){
+                //all cells scan their neighbors
+                cellArr[y][x].scanState();
+                cellArr[y][x].updateColor();
+            }
+        }
+        for(int y = 0; y < HEIGHT; y++){
+            for(int x = 0; x < WIDTH; x++){
+                //all cells update their state after scanning
+                cellArr[y][x].updateState();
+            }
+        }
+    }));
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -66,24 +84,19 @@ public class Main extends Application {
             board.setTranslateY(mouseEvent.getScreenY() + dragDelta.y);
         });
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.05), actionEvent -> {
-            for(int y = 0; y < HEIGHT; y++){
-                for(int x = 0; x < WIDTH; x++){
-                    //all cells scan their neighbors
-                    cellArr[y][x].scanState();
-                }
-            }
-            for(int y = 0; y < HEIGHT; y++){
-                for(int x = 0; x < WIDTH; x++){
-                    //all cells update their state after scanning
-                    cellArr[y][x].updateState();
-                }
-            }
-        }));
         scene.setOnKeyPressed(e -> {
-            if(e.getCode() == KeyCode.SPACE){
-                if(timeline.getStatus() == Animation.Status.RUNNING)
+            //spacebar pauses or unpauses simulation
+            if(e.getCode() == KeyCode.P){
+                if(timeline.getStatus() == Animation.Status.RUNNING) {
+                    for (int y = 0; y < HEIGHT; y++) {
+                        for (int x = 0; x < WIDTH; x++) {
+                            //all cells scan their neighbors
+                            cellArr[y][x].scanState();
+                            cellArr[y][x].updateColor();
+                        }
+                    }
                     timeline.stop();
+                }
                 else
                     timeline.play();
             }
@@ -99,8 +112,9 @@ public class Main extends Application {
         root.getColumnConstraints().add(col2);
         root.addColumn(0,boardScene);
         ControlWindow control = new ControlWindow();
-        root.addColumn(1);
-        root.getChildren().remove(control);
+        root.addColumn(1, control);
+
+        Button btn = new Button("Show Button Window");
 
         createBoard();
         boardScene.getChildren().add(board);
@@ -127,4 +141,12 @@ public class Main extends Application {
     }
 
     class Delta { double x, y; } //records cursor coordinates
+
+    public static boolean getColored(){ return colored; }
+    public static void setColored(boolean value){ colored = value; }
+
+    public static GridPane getRoot(){ return root; }
+    public static Pane getBoardScene(){ return boardScene; }
+    public static Group Board(){ return board; }
+    public static Timeline getTimeline(){ return timeline; }
 }

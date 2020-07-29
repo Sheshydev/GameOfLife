@@ -36,10 +36,10 @@ public class Cell extends Rectangle
                     die();
             }
         });
-        this.setX(x * 5);
-        this.setY(y * 5);
-        this.setWidth(5);
-        this.setHeight(5);
+        this.setX(x * (Main.SCREENWIDTH/Main.WIDTH));
+        this.setY(y * (Main.SCREENHEIGHT/Main.HEIGHT));
+        this.setWidth(Main.SCREENWIDTH/Main.WIDTH);
+        this.setHeight(Main.SCREENHEIGHT/Main.HEIGHT);
         this.x = x;
         this.y = y;
     }

@@ -29,25 +29,17 @@ public class Main extends Application {
     public static double SCREENHEIGHT = 1080;
 
     private static boolean colored = true;
+    private static boolean edgeBorders = false;
 
+    private static Stage stage;
     private static Cell cellArr[][] = new Cell[HEIGHT][WIDTH];
     private static GridPane root = new GridPane();
     private static Pane boardScene = new Pane();
     private static Group board = new Group();
-    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), actionEvent -> {
-        for(int y = 0; y < HEIGHT; y++){
-            for(int x = 0; x < WIDTH; x++){
-                //all cells scan their neighbors
-                cellArr[y][x].scanState();
-                cellArr[y][x].updateColor();
-            }
-        }
-        for(int y = 0; y < HEIGHT; y++){
-            for(int x = 0; x < WIDTH; x++){
-                //all cells update their state after scanning
-                cellArr[y][x].updateState();
-            }
-        }
+    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), actionEvent -> {
+        scanAllCellNeighbors();
+        updateAllCellColors();
+        updateAllCellStates();
     }));
 
     @Override
@@ -55,6 +47,7 @@ public class Main extends Application {
         Scene scene = new Scene(root, SCREENWIDTH, SCREENHEIGHT);
         primaryStage.setTitle("Game of Life");
         primaryStage.setScene(scene);
+        stage = primaryStage;
 
         final double SCALE_DELTA = 1.05; //zoom factor
 
@@ -88,13 +81,8 @@ public class Main extends Application {
             //spacebar pauses or unpauses simulation
             if(e.getCode() == KeyCode.P){
                 if(timeline.getStatus() == Animation.Status.RUNNING) {
-                    for (int y = 0; y < HEIGHT; y++) {
-                        for (int x = 0; x < WIDTH; x++) {
-                            //all cells scan their neighbors
-                            cellArr[y][x].scanState();
-                            cellArr[y][x].updateColor();
-                        }
-                    }
+                    scanAllCellNeighbors();
+                    updateAllCellColors();
                     timeline.stop();
                 }
                 else
@@ -142,11 +130,43 @@ public class Main extends Application {
 
     class Delta { double x, y; } //records cursor coordinates
 
-    public static boolean getColored(){ return colored; }
+    public static boolean isColored(){ return colored; }
     public static void setColored(boolean value){ colored = value; }
+    public static boolean isEdgeBorders(){ return edgeBorders; }
+    public static void setEdgeBorders(boolean value){ edgeBorders = value; }
 
     public static GridPane getRoot(){ return root; }
     public static Pane getBoardScene(){ return boardScene; }
     public static Group Board(){ return board; }
     public static Timeline getTimeline(){ return timeline; }
+
+    public static void scanAllCellNeighbors(){
+        for(int y = 0; y < HEIGHT; y++){
+            for(int x = 0; x < WIDTH; x++){
+                //all cells scan their neighbors
+                cellArr[y][x].scanState();
+            }
+        }
+    }
+    public static void updateAllCellColors(){
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                //all cells update their colors
+                cellArr[y][x].updateColor();
+            }
+        }
+    }
+    public static void updateAllCellStates(){
+        for(int y = 0; y < HEIGHT; y++){
+            for(int x = 0; x < WIDTH; x++){
+                //all cells update their state after scanning
+                cellArr[y][x].updateState();
+            }
+        }
+    }
+
+    public static Stage getStage(){
+        return stage;
+    }
+
 }

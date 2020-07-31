@@ -20,10 +20,16 @@ public class Cell extends Rectangle
             @Override
             public void handle(MouseEvent mouseEvent)
             {
-                if(mouseEvent.isControlDown())
+                if(mouseEvent.isShiftDown()) {
                     live();
-                if(mouseEvent.isShiftDown())
+                    Main.scanAllCellNeighbors();
+                    Main.updateAllCellColors();
+                }
+                if(mouseEvent.isControlDown()) {
                     die();
+                    Main.scanAllCellNeighbors();
+                    Main.updateAllCellColors();
+                }
             }
         });
         this.setOnMousePressed(new EventHandler<MouseEvent>()
@@ -31,10 +37,16 @@ public class Cell extends Rectangle
             @Override
             public void handle(MouseEvent mouseEvent)
             {
-                if(mouseEvent.isPrimaryButtonDown())
+                if(mouseEvent.isPrimaryButtonDown()) {
                     live();
-                else
+                    Main.scanAllCellNeighbors();
+                    Main.updateAllCellColors();
+                }
+                else{
                     die();
+                    Main.scanAllCellNeighbors();
+                    Main.updateAllCellColors();
+                }
             }
         });
         this.setX(x * (Main.SCREENWIDTH/Main.WIDTH));
@@ -54,7 +66,7 @@ public class Cell extends Rectangle
     }
     public void updateColor(){
         Color color = state == 1? Color.WHITE : Color.GRAY;
-        if (state == 1 && Main.getColored() == true) {
+        if (state == 1 && Main.isColored() == true) {
             switch (total) {
                 case 3:
                     color = Color.LIGHTGREEN;
@@ -87,15 +99,22 @@ public class Cell extends Rectangle
                 if(!(i == 0 && j == 0)){
                     neighborY = y + i;
                     neighborX = x + j;
-                    if(neighborX < 0)
-                        neighborX = Main.WIDTH - 1;
-                    if(neighborX >= Main.WIDTH)
-                        neighborX = 0;
-                    if(neighborY < 0)
-                        neighborY = Main.HEIGHT - 1;
-                    if(neighborY >= Main.HEIGHT)
-                        neighborY = 0;
-                    total += Main.getCell(neighborY, neighborX).getState();
+                    if(Main.isEdgeBorders()) {
+                        if(neighborX < 0 || neighborX >= Main.WIDTH || neighborY < 0 || neighborY >= Main.HEIGHT)
+                            break;
+                        else
+                            total += Main.getCell(neighborY, neighborX).getState();
+                    } else{
+                        if (neighborX < 0)
+                            neighborX = Main.WIDTH - 1;
+                        if (neighborX >= Main.WIDTH)
+                            neighborX = 0;
+                        if (neighborY < 0)
+                            neighborY = Main.HEIGHT - 1;
+                        if (neighborY >= Main.HEIGHT)
+                            neighborY = 0;
+                        total += Main.getCell(neighborY, neighborX).getState();
+                    }
                 }
             }
         }

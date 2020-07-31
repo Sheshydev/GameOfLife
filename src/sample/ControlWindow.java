@@ -12,10 +12,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 public class ControlWindow extends GridPane {
     public ControlWindow(){
-        this.setStyle("-fx-background-color: #3fbeff");
+        this.setStyle("-fx-background-color: rgba(42,42,42,0.9)");
         this.setWidth(Main.SCREENWIDTH);
         //column allows center alignment of child nodes
         ColumnConstraints col = new ColumnConstraints();
@@ -30,6 +33,7 @@ public class ControlWindow extends GridPane {
 
         Text txt = new Text("Control Window");
         txt.setFont(Font.font("Verdana", 20));
+        txt.setFill(Color.GHOSTWHITE);
 
         Button btn = new Button("Show control window");
         btn.setOnMousePressed(mouseEvent -> {
@@ -39,16 +43,8 @@ public class ControlWindow extends GridPane {
         btn.setTranslateY(-Main.SCREENHEIGHT * 0.45);
         btn.setTranslateX(Main.SCREENWIDTH * 0.90);
 
-        Button btn1 = new Button("Color mode");
+        Button btn1 = new Button("Pause/Play");
         btn1.setOnMousePressed(mouseEvent -> {
-            if(Main.getColored())
-                Main.setColored(false);
-            else
-                Main.setColored(true);
-        });
-
-        Button btn2 = new Button("Pause/Play");
-        btn2.setOnMousePressed(mouseEvent -> {
             //spacebar pauses or unpauses simulation
             if(Main.getTimeline().getStatus() == Animation.Status.RUNNING) {
                 for (int y = 0; y < Main.HEIGHT; y++) {
@@ -64,8 +60,25 @@ public class ControlWindow extends GridPane {
                 Main.getTimeline().play();
         });
 
-        Button btn3 = new Button("Hide control window");
+        Button btn2 = new Button("Color mode");
+        btn2.setOnMousePressed(mouseEvent -> {
+            Main.setColored(!Main.isColored());
+        });
+
+
+        Button btn3 = new Button("Edge borders");
         btn3.setOnMousePressed(mouseEvent -> {
+            Main.setEdgeBorders(!Main.isEdgeBorders());
+        });
+
+        FileChooser fileChooser = new FileChooser();
+        Button btn4 = new Button("import file");
+        btn4.setOnMousePressed(mouseEvent -> {
+            File selectedFile = fileChooser.showOpenDialog(Main.getStage());
+        });
+
+        Button btn5 = new Button("Hide control window");
+        btn5.setOnMousePressed(mouseEvent -> {
             if(Main.getRoot().getChildren().contains(this)) {
                 Main.getRoot().getChildren().remove(this);
                 Main.getRoot().getChildren().add(btn);
@@ -76,10 +89,14 @@ public class ControlWindow extends GridPane {
         this.addRow(1,btn1);
         this.addRow(2, btn2);;
         this.addRow(3, btn3);
+        this.addRow(4, btn4);
+        this.addRow(5, btn5);
 
-        this.setHalignment(txt, HPos.CENTER);
-        this.setHalignment(btn1, HPos.CENTER);
-        this.setHalignment(btn2, HPos.CENTER);
-        this.setHalignment(btn3, HPos.CENTER);
+        setHalignment(txt, HPos.CENTER);
+        setHalignment(btn1, HPos.CENTER);
+        setHalignment(btn2, HPos.CENTER);
+        setHalignment(btn3, HPos.CENTER);
+        setHalignment(btn4, HPos.CENTER);
+        setHalignment(btn5, HPos.CENTER);
     }
 }

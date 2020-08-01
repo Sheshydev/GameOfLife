@@ -37,8 +37,8 @@ public class ControlWindow extends GridPane {
 
         Button btn = new Button("Show control window");
         btn.setOnMousePressed(mouseEvent -> {
-            Main.getRoot().getChildren().add(this);
-            Main.getRoot().getChildren().remove(btn);
+            Main.getSimView().getChildren().add(this);
+            Main.getSimView().getChildren().remove(btn);
         });
         btn.setTranslateY(-Main.SCREENHEIGHT * 0.45);
         btn.setTranslateX(Main.SCREENWIDTH * 0.90);
@@ -79,9 +79,9 @@ public class ControlWindow extends GridPane {
 
         Button btn5 = new Button("Hide control window");
         btn5.setOnMousePressed(mouseEvent -> {
-            if(Main.getRoot().getChildren().contains(this)) {
-                Main.getRoot().getChildren().remove(this);
-                Main.getRoot().getChildren().add(btn);
+            if(Main.getSimView().getChildren().contains(this)) {
+                Main.getSimView().getChildren().remove(this);
+                Main.getSimView().getChildren().add(btn);
             }
         });
 

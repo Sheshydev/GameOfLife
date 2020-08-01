@@ -14,17 +14,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Main extends Application {
-    public static int WIDTH = 102; //amount of cells in a row
-    public static int HEIGHT = 60; //amount of cells in a column
+    public static int WIDTH = 26; //amount of cells in a row
+    public static int HEIGHT = 15; //amount of cells in a column
     public static double SCREENWIDTH = 1920;
     public static double SCREENHEIGHT = 1080;
 
@@ -33,10 +30,12 @@ public class Main extends Application {
 
     private static Stage stage;
     private static Cell cellArr[][] = new Cell[HEIGHT][WIDTH];
-    private static GridPane root = new GridPane();
+    private static Menu menu = new Menu();
+    private static StackPane root = new StackPane();
+    private static GridPane simView = new GridPane();
     private static Pane boardScene = new Pane();
     private static Group board = new Group();
-    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), actionEvent -> {
+    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.7), actionEvent -> {
         scanAllCellNeighbors();
         updateAllCellColors();
         updateAllCellStates();
@@ -96,13 +95,15 @@ public class Main extends Application {
         ColumnConstraints col2 = new ColumnConstraints();
         col1.setPercentWidth(85);
         col2.setPercentWidth(15);
-        root.getColumnConstraints().add(col1);
-        root.getColumnConstraints().add(col2);
-        root.addColumn(0,boardScene);
+        simView.getColumnConstraints().add(col1);
+        simView.getColumnConstraints().add(col2);
+        simView.addColumn(0,boardScene);
         ControlWindow control = new ControlWindow();
-        root.addColumn(1, control);
+        simView.addColumn(1, control);
+        root.getChildren().add(simView);
 
-        Button btn = new Button("Show Button Window");
+        root.getChildren().remove(simView);
+        root.getChildren().add(menu);
 
         createBoard();
         boardScene.getChildren().add(board);
@@ -135,10 +136,11 @@ public class Main extends Application {
     public static boolean isEdgeBorders(){ return edgeBorders; }
     public static void setEdgeBorders(boolean value){ edgeBorders = value; }
 
-    public static GridPane getRoot(){ return root; }
+    public static StackPane getRoot(){ return root; }
     public static Pane getBoardScene(){ return boardScene; }
     public static Group Board(){ return board; }
     public static Timeline getTimeline(){ return timeline; }
+    public static GridPane getSimView(){ return simView; }
 
     public static void scanAllCellNeighbors(){
         for(int y = 0; y < HEIGHT; y++){

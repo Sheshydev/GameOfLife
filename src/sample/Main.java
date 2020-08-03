@@ -16,33 +16,43 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Main extends Application {
-    public static int WIDTH = 26; //amount of cells in a row
-    public static int HEIGHT = 15; //amount of cells in a column
+    private static int width = 10; //amount of cells in a row
+    private static int height = 5; //amount of cells in a column
     public static double SCREENWIDTH = 1920;
     public static double SCREENHEIGHT = 1080;
 
+    private static double animationDuration;
     private static boolean colored = true;
     private static boolean edgeBorders = false;
 
     private static Stage stage;
-    private static Cell cellArr[][] = new Cell[HEIGHT][WIDTH];
+    private static Cell cellArr[][];
     private static Menu menu = new Menu();
     private static StackPane root = new StackPane();
     private static GridPane simView = new GridPane();
     private static Pane boardScene = new Pane();
     private static Group board = new Group();
-    private static Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.7), actionEvent -> {
-        scanAllCellNeighbors();
-        updateAllCellColors();
-        updateAllCellStates();
-    }));
+    private static Timeline timeline;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        readConfig("config.txt");
+        cellArr = new Cell[height][width];
+        timeline = new Timeline(new KeyFrame(Duration.seconds(animationDuration), actionEvent -> {
+            scanAllCellNeighbors();
+            updateAllCellColors();
+            updateAllCellStates();
+        }));
+
         Scene scene = new Scene(root, SCREENWIDTH, SCREENHEIGHT);
         primaryStage.setTitle("Game of Life");
         primaryStage.setScene(scene);
@@ -100,9 +110,7 @@ public class Main extends Application {
         simView.addColumn(0,boardScene);
         ControlWindow control = new ControlWindow();
         simView.addColumn(1, control);
-        root.getChildren().add(simView);
 
-        root.getChildren().remove(simView);
         root.getChildren().add(menu);
 
         createBoard();
@@ -115,9 +123,9 @@ public class Main extends Application {
         launch(args);
     }
 
-    private void createBoard(){
-        for(int y = 0; y < HEIGHT; y++){
-            for(int x = 0; x < WIDTH; x++){
+    public static void createBoard(){
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
                 Cell cell = new Cell(y, x);
                 cellArr[y][x] = cell;
                 board.getChildren().add(cell);
@@ -136,31 +144,37 @@ public class Main extends Application {
     public static boolean isEdgeBorders(){ return edgeBorders; }
     public static void setEdgeBorders(boolean value){ edgeBorders = value; }
 
+    public static int getWidth(){ return width; }
+    public static int getHeight(){ return height; }
+    public static void setWidth(int newWidth){ width = newWidth; }
+    public static void setHeight(int newHeight){ height = newHeight; }
+
     public static StackPane getRoot(){ return root; }
     public static Pane getBoardScene(){ return boardScene; }
-    public static Group Board(){ return board; }
+    public static Group getBoard(){ return board; }
     public static Timeline getTimeline(){ return timeline; }
+    public static void setTimeline(Timeline newTimeline){ timeline = newTimeline; }
     public static GridPane getSimView(){ return simView; }
 
     public static void scanAllCellNeighbors(){
-        for(int y = 0; y < HEIGHT; y++){
-            for(int x = 0; x < WIDTH; x++){
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
                 //all cells scan their neighbors
                 cellArr[y][x].scanState();
             }
         }
     }
     public static void updateAllCellColors(){
-        for (int y = 0; y < HEIGHT; y++) {
-            for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 //all cells update their colors
                 cellArr[y][x].updateColor();
             }
         }
     }
     public static void updateAllCellStates(){
-        for(int y = 0; y < HEIGHT; y++){
-            for(int x = 0; x < WIDTH; x++){
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
                 //all cells update their state after scanning
                 cellArr[y][x].updateState();
             }
@@ -169,6 +183,64 @@ public class Main extends Application {
 
     public static Stage getStage(){
         return stage;
+    }
+
+    private boolean readConfig(String filename){
+        String line, key = "", value = "";
+        BufferedReader buffRead;
+        try{
+            buffRead = new BufferedReader(new FileReader(filename));
+            while ((line = buffRead.readLine()) != null){
+                for(int i = 0; i < line.length(); i++){
+                    key += line.charAt(i);
+                    if(key.equals("width:")){
+                        i ++;
+                        while(i != line.length()){
+                            value += line.charAt(i);
+                            width = Integer.parseInt(value);
+                            i++;
+                        }
+                        width = Integer.parseInt(value);
+                    } else if(key.equals("height:")) {
+                        i++;
+                        while (i != line.length()) {
+                            value += line.charAt(i);
+                            i++;
+                        }
+                        height = Integer.parseInt(value);
+                    }else if(key.equals("animationDuration:")){
+                        i ++;
+                        while(i != line.length()){
+                            value += line.charAt(i);
+                            i++;
+                        }
+                        animationDuration = Double.parseDouble(value);
+                    } else if(key.equals("defaultColored:")){
+                        i ++;
+                        while(i != line.length()){
+                            value += line.charAt(i);
+                            i++;
+                        }
+                        colored = Boolean.parseBoolean(value);
+                    } else if(key.equals("defaultEdgeBorders:")){
+                        i ++;
+                        while(i != line.length()){
+                            value += line.charAt(i);
+                            i++;
+                        }
+                        edgeBorders = Boolean.parseBoolean(value);
+                    }
+                    value = "";
+                }
+                key = "";
+            }
+
+        } catch (IOException e){
+            System.out.println("bad");
+            buffRead = null;
+            return false;
+        }
+        return true;
     }
 
 }

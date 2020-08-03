@@ -49,10 +49,10 @@ public class Cell extends Rectangle
                 }
             }
         });
-        this.setX(x * (Main.SCREENWIDTH/Main.WIDTH));
-        this.setY(y * (Main.SCREENHEIGHT/Main.HEIGHT));
-        this.setWidth(Main.SCREENWIDTH/Main.WIDTH);
-        this.setHeight(Main.SCREENHEIGHT/Main.HEIGHT);
+        this.setX(x * (Main.SCREENWIDTH/Main.getWidth()));
+        this.setY(y * (Main.SCREENHEIGHT/Main.getHeight()));
+        this.setWidth(Main.SCREENWIDTH/Main.getWidth());
+        this.setHeight(Main.SCREENHEIGHT/Main.getHeight());
         this.x = x;
         this.y = y;
     }
@@ -100,18 +100,18 @@ public class Cell extends Rectangle
                     neighborY = y + i;
                     neighborX = x + j;
                     if(Main.isEdgeBorders()) {
-                        if(neighborX < 0 || neighborX >= Main.WIDTH || neighborY < 0 || neighborY >= Main.HEIGHT)
+                        if(neighborX < 0 || neighborX >= Main.getWidth() || neighborY < 0 || neighborY >= Main.getHeight())
                             break;
                         else
                             total += Main.getCell(neighborY, neighborX).getState();
                     } else{
                         if (neighborX < 0)
-                            neighborX = Main.WIDTH - 1;
-                        if (neighborX >= Main.WIDTH)
+                            neighborX = Main.getWidth() - 1;
+                        if (neighborX >= Main.getWidth())
                             neighborX = 0;
                         if (neighborY < 0)
-                            neighborY = Main.HEIGHT - 1;
-                        if (neighborY >= Main.HEIGHT)
+                            neighborY = Main.getHeight() - 1;
+                        if (neighborY >= Main.getHeight())
                             neighborY = 0;
                         total += Main.getCell(neighborY, neighborX).getState();
                     }

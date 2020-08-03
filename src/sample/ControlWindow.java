@@ -1,10 +1,14 @@
 package sample;
 
 import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -13,8 +17,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.File;
+
+import static sample.Main.*;
 
 public class ControlWindow extends GridPane {
     public ControlWindow(){
@@ -47,8 +54,8 @@ public class ControlWindow extends GridPane {
         btn1.setOnMousePressed(mouseEvent -> {
             //spacebar pauses or unpauses simulation
             if(Main.getTimeline().getStatus() == Animation.Status.RUNNING) {
-                for (int y = 0; y < Main.HEIGHT; y++) {
-                    for (int x = 0; x < Main.WIDTH; x++) {
+                for (int y = 0; y < Main.getHeight(); y++) {
+                    for (int x = 0; x < Main.getWidth(); x++) {
                         //all cells scan their neighbors
                         Main.getCell(y,x).scanState();
                         Main.getCell(y,x).updateColor();

@@ -1,0 +1,5 @@
+height:300
+width:200
+animationDuration:0.1
+defaultColored:true
+defaultEdgeBorders:false

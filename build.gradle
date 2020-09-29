@@ -1,20 +1,13 @@
-plugins {
-    id 'java'
-}
-
-group 'org.example'
-version '1.0-SNAPSHOT'
+apply plugin: 'java'
 
 repositories {
     mavenCentral()
 }
+
 sourceSets {
-    main {
-        java {
+    src {
+        sample {
             srcDirs = ['src']
         }
     }
-}
-dependencies {
-    compile 'junit:junit:4.12'
 }
